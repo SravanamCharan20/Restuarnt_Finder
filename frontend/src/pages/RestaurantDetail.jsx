@@ -12,10 +12,12 @@ export default function RestaurantDetail() {
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       try {
-        const response = await axios.get(`/restaurant/${id}`);
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const response = await axios.get(`${baseUrl}/restaurant/${id}`);
         setRestaurant(response.data);
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching restaurant details:', err);
         setError("Failed to load restaurant details");
         setLoading(false);
       }
@@ -77,25 +79,27 @@ export default function RestaurantDetail() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">{restaurant.name}</h1>
-                    {restaurant.establishment_types?.length > 0 && (
+                    {restaurant.establishment && (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {restaurant.establishment_types.map((type, index) => (
-                          <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">
-                            {type}
-                          </span>
-                        ))}
+                        <span className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600">
+                          {restaurant.establishment}
+                        </span>
                       </div>
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <div className="flex items-center bg-gray-50 rounded-full px-4 py-2">
                       <span className="text-gray-900 font-semibold mr-1">
-                        {restaurant.user_rating?.aggregate_rating}
+                        {restaurant.user_rating?.aggregate_rating || 'N/A'}
                       </span>
                       <span className="text-yellow-400">★</span>
                     </div>
-                    <span className="text-sm text-gray-500">{restaurant.user_rating?.rating_text}</span>
-                    <span className="text-sm text-gray-500">{restaurant.user_rating?.votes} votes</span>
+                    <span className="text-sm text-gray-500">
+                      {restaurant.user_rating?.rating_text || 'No rating'}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {restaurant.user_rating?.votes || 0} votes
+                    </span>
                   </div>
                 </div>
 
@@ -112,12 +116,13 @@ export default function RestaurantDetail() {
                       </svg>
                       <div>
                         <p className="font-medium">Address</p>
-                        <p className="text-sm">{restaurant.location?.address}</p>
+                        <p className="text-sm mt-1">{restaurant.location?.address || 'Address not available'}</p>
                         <p className="text-sm text-gray-500 mt-1">
-                          {restaurant.location?.locality}, {restaurant.location?.city}
+                          {restaurant.location?.locality && `${restaurant.location.locality}, `}
+                          {restaurant.location?.city || ''}
                         </p>
                         {restaurant.location?.zipcode && (
-                          <p className="text-sm text-gray-500">ZIP: {restaurant.location?.zipcode}</p>
+                          <p className="text-sm text-gray-500">ZIP: {restaurant.location.zipcode}</p>
                         )}
                       </div>
                     </div>
@@ -130,7 +135,7 @@ export default function RestaurantDetail() {
                       </svg>
                       <div>
                         <p className="font-medium">Cuisines</p>
-                        <p className="text-sm">{restaurant.cuisines}</p>
+                        <p className="text-sm mt-1">{restaurant.cuisines || 'Cuisines not specified'}</p>
                       </div>
                     </div>
                   </div>
@@ -144,9 +149,11 @@ export default function RestaurantDetail() {
                       </svg>
                       <div>
                         <p className="font-medium">Pricing</p>
-                        <p className="text-sm">Average cost for two: ₹{restaurant.average_cost_for_two}</p>
+                        <p className="text-sm mt-1">
+                          Average cost for two: ₹{restaurant.average_cost_for_two || 'Not specified'}
+                        </p>
                         <p className="text-sm text-gray-500 mt-1">
-                          Price Range: {'₹'.repeat(restaurant.price_range)}
+                          Price Range: {'₹'.repeat(restaurant.price_range || 0)}
                         </p>
                       </div>
                     </div>
@@ -166,7 +173,7 @@ export default function RestaurantDetail() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                       d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                               </svg>
-                              <span className="text-sm">Online Delivery</span>
+                              <span className="text-sm">Online Delivery Available</span>
                             </div>
                           )}
                           {restaurant.has_table_booking && (
@@ -175,7 +182,7 @@ export default function RestaurantDetail() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                       d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                               </svg>
-                              <span className="text-sm">Table Booking</span>
+                              <span className="text-sm">Table Booking Available</span>
                             </div>
                           )}
                         </div>
@@ -201,9 +208,9 @@ export default function RestaurantDetail() {
                       View Menu
                     </a>
                   )}
-                  {restaurant.photos_url && (
+                  {restaurant.url && (
                     <a
-                      href={restaurant.photos_url}
+                      href={restaurant.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-xl
@@ -211,9 +218,9 @@ export default function RestaurantDetail() {
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
-                      View Photos
+                      Visit Website
                     </a>
                   )}
                 </div>

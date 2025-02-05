@@ -9,11 +9,15 @@
       "destination": "https://restuarntfinder-production.up.railway.app/api/analyze-image/:path*"
     },
     {
+      "source": "/restaurant/:path*",
+      "destination": "https://restuarntfinder-production.up.railway.app/restaurant/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
   ],
   "env": {
-    "VITE_API_URL": "https://restuarntfinder-production.up.railway.app/"
+    "VITE_API_URL": "https://restuarntfinder-production.up.railway.app"
   }
 } 
