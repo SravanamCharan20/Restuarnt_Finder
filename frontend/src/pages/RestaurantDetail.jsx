@@ -12,10 +12,9 @@ export default function RestaurantDetail() {
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:6969/restaurant/${id}`);
+        const response = await axios.get(`/restaurant/${id}`);
         setRestaurant(response.data);
         setLoading(false);
-      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         setError("Failed to load restaurant details");
         setLoading(false);
