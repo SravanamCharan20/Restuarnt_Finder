@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    {
+      "source": "/restaurants-by-cuisine/:path*",
+      "destination": "https://your-backend-url.com/restaurants-by-cuisine/:path*"
+    },
+    {
+      "source": "/api/analyze-image/:path*",
+      "destination": "https://your-backend-url.com/api/analyze-image/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://your-backend-url.com"
+  }
+} 

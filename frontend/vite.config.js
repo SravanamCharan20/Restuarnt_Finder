@@ -10,13 +10,19 @@ export default defineConfig({
   server: {
     proxy: {
       '/restaurants-by-cuisine': {
-        target: 'http://localhost:6969',
+        // eslint-disable-next-line no-undef
+        target: process.env.VITE_API_URL || 'http://localhost:6969',
         changeOrigin: true
       },
       '/api/analyze-image': {
-        target: 'http://localhost:6969',
+        // eslint-disable-next-line no-undef
+        target: process.env.VITE_API_URL || 'http://localhost:6969',
         changeOrigin: true
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true
   }
 })
