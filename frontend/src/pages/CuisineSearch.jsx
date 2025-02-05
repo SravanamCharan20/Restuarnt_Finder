@@ -156,10 +156,16 @@ export default function CuisineSearch() {
     }
   }, [cuisine, userLocation, isDistanceFilterActive, maxDistance]);
 
-  // Update handlePageChange to use memoized handleSearch
+  // Update handlePageChange to handle both text and image-based searches
   const handlePageChange = useCallback((newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      handleSearch(newPage);
+      if (fileInputRef.current?.files?.length > 0) {
+        // If there's a file selected, use image-based search
+        handleImageUpload({ target: { files: [fileInputRef.current.files[0]] } }, newPage);
+      } else {
+        // Otherwise use text-based search
+        handleSearch(newPage);
+      }
     }
   }, [handleSearch, totalPages]);
 
@@ -221,8 +227,8 @@ export default function CuisineSearch() {
     navigate(`/restaurant/${restaurantId}`);
   };
 
-  // Add image upload handler
-  const handleImageUpload = async (e) => {
+  // Update handleImageUpload to handle pagination properly
+  const handleImageUpload = async (e, page = 1) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -233,7 +239,7 @@ export default function CuisineSearch() {
     formData.append('image', file);
 
     try {
-      const response = await axios.post('/api/analyze-image', formData, {
+      const response = await axios.post(`/api/analyze-image?page=${page}&limit=6`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -242,7 +248,7 @@ export default function CuisineSearch() {
       if (response.data.success) {
         setRestaurants(response.data.result);
         setTotalPages(response.data.totalPages);
-        setCurrentPage(1);
+        setCurrentPage(response.data.currentPage);
         setCuisine(response.data.searchTags.join(', ')); // Set detected cuisines
       } else {
         setError('No restaurants found for the detected cuisine');
