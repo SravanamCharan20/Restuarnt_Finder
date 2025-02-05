@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/restaurants-by-cuisine/:path*",
-      "destination": "https://your-backend-url.com/restaurants-by-cuisine/:path*"
+      "destination": "https://restuarnt-finder.vercel.app/restaurants-by-cuisine/:path*"
     },
     {
       "source": "/api/analyze-image/:path*",
-      "destination": "https://your-backend-url.com/api/analyze-image/:path*"
+      "destination": "https://restuarnt-finder.vercel.app/api/analyze-image/:path*"
     },
     {
       "source": "/(.*)",
@@ -14,6 +14,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://your-backend-url.com"
+    "VITE_API_URL": "https://restuarnt-finder.vercel.app/"
   }
 } 
