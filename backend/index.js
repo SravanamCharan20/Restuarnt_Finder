@@ -270,9 +270,49 @@ app.post("/api/analyze-image",
       );
 
       if (clarifaiResponse) {
+        // Define cuisine-related terms and their priorities
+        const cuisineTerms = {
+          'pizza': true,
+          'sushi': true,
+          'burger': true,
+          'pasta': true,
+          'chinese': true,
+          'indian': true,
+          'mexican': true,
+          'italian': true,
+          'thai': true,
+          'japanese': true
+          // Add more cuisine types as needed
+        };
+
+        // Get the most relevant cuisine tag
         const searchTags = clarifaiResponse.outputs[0].data.concepts
-          .filter(concept => concept.value > 0.5) // Only use concepts with confidence > 50%
+          .filter(concept => concept.value > 0.85) // High confidence threshold
+          .filter(concept => {
+            // Filter out non-cuisine related terms
+            const nonCuisineTerms = [
+              'dish', 'food', 'meal', 'plate', 'dinner', 'lunch', 'breakfast',
+              'sauce', 'cheese', 'vegetable', 'meat', 'dough', 'crust', 'pie',
+              'pastry', 'frozen', 'ham', 'ingredient', 'tomato', 'salami',
+              'pepperoni', 'mozzarella'
+            ];
+            return !nonCuisineTerms.includes(concept.name.toLowerCase()) &&
+                   (cuisineTerms[concept.name.toLowerCase()] || false);
+          })
+          .sort((a, b) => b.value - a.value) // Sort by confidence
+          .slice(0, 1) // Take only the highest confidence cuisine tag
           .map(concept => concept.name);
+
+        // If no cuisine tag found, use the dish type
+        if (searchTags.length === 0) {
+          const dishTag = clarifaiResponse.outputs[0].data.concepts
+            .filter(concept => concept.value > 0.95) // Very high confidence for dish type
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 1)
+            .map(concept => concept.name);
+          
+          searchTags.push(dishTag[0]);
+        }
 
         const searchConditions = searchTags.flatMap(tag => [
           { "restaurants.restaurant.cuisines": { $regex: tag, $options: "i" } },
