@@ -9,12 +9,31 @@
       "destination": "https://restuarntfinder-production.up.railway.app/api/analyze-image/:path*"
     },
     {
-      "source": "/restaurant/:path*",
-      "destination": "https://restuarntfinder-production.up.railway.app/restaurant/:path*"
+      "source": "/restaurant/:id",
+      "destination": "https://restuarntfinder-production.up.railway.app/restaurant/:id"
     },
     {
       "source": "/(.*)",
       "destination": "/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-Requested-With, Content-Type, Accept"
+        }
+      ]
     }
   ],
   "env": {

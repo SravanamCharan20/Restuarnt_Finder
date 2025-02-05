@@ -12,8 +12,13 @@ export default function RestaurantDetail() {
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || '';
-        const response = await axios.get(`${baseUrl}/restaurant/${id}`);
+        const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, ''); // Remove trailing slash if present
+        const response = await axios.get(`${baseUrl}/restaurant/${id}`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
         setRestaurant(response.data);
         setLoading(false);
       } catch (err) {
